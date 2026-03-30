@@ -1194,6 +1194,7 @@ MonoBehaviour:
   Name: JAMES
   Life: 0
   level: 1
+  Target: {fileID: 0}
   learnedSkills:
   - {fileID: 0}
 --- !u!4 &609786258

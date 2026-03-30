@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewSkill", menuName = "Skills/Skill")]
+[CreateAssetMenu(fileName = "SkillManager", menuName = "Skills/SkillManager")]
 public class Skill : ScriptableObject
 {
+    public string SkillDescription;
     public int id;
     public string skillName;
-    public int cost;
     public int requiredLevel;
 }

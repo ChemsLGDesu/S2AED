@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 //namespace Fortnite.Core
@@ -45,6 +46,23 @@ namespace B3NNY.Utils
 
             result = default;
             return false;
+        }
+        public static T[] Filter<T>(T[] array, Func<T, bool> condition)
+        {
+            if (array == null || condition == null)
+                return null;
+
+            List<T> result = new List<T>();
+
+            foreach (var item in array)
+            {
+                if (condition(item))
+                {
+                    result.Add(item);
+                }
+            }
+
+            return result.ToArray();
         }
     }
 }

@@ -3,8 +3,19 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance;
+
     public Player player;
     public SkillManager skillManager;
+
+
+    public void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+    }
     void Start()
     {
         if (player != null)
@@ -15,61 +26,84 @@ public class GameManager : MonoBehaviour
         Debug.Log(obj);
 
         int simpleReturn2 = ReturnSimple(out _);
+    }
 
-        // Habilidades
 
-        Debug.Log("!tienes todas las habilidades");
+    public void BtnSelectSkill(Skill skill) // Método para seleccionar una habilidad
+    {
+        player.Target = skill;
+        Debug.Log("Seleccionada: " + skill.skillName);
 
-        foreach (var skill in skillManager.allSkills)
+        // ✔ Mostrar descripción (out)
+        SkillDescription(out string desc);
+        Debug.Log(desc);
+
+        // ✔ Validar si puede aprender
+        bool canLearn = GameUtils.Validate(skill, s => player.level >= s.requiredLevel);
+
+        if (canLearn)
         {
-            Debug.Log("Skill: " + skill.skillName);
-
-
-            bool canLearn = GameUtils.Validate(skill, s => player.level >= s.requiredLevel);  // que confirme si puede aprender
-
-            if (canLearn)
+            GameUtils.Process(skill, s =>
             {
-                Debug.Log("Puede aprender");
-
-                // Si APRENDE LA skill
-                GameUtils.Process(skill, s =>
+                if (!player.learnedSkills.Contains(s))
                 {
-                    if (!player.learnedSkills.Contains(s))
-                    {
-                        player.learnedSkills.Add(s);
-                        Debug.Log("Aprendida: " + s.skillName);
-                    }
-                });
-            }
-            else
-            {
-                Debug.Log("Nivel insuficiente");
-            }
+                    player.learnedSkills.Add(s);
+                    Debug.Log("Aprendida: " + s.skillName);
+                }
+            });
         }
-
-        Debug.Log("habilidad aprendida");
-
-
-        foreach (var skill in player.learnedSkills)  // Recorrer habilidades aprendidas
+        else
         {
-            //EjECUTA SKILL
+            Debug.Log("Nivel insuficiente");
+        }
+    }
+
+    public void ShowHighLevelSkills()
+    {
+        Skill[] highLevelSkills = GameUtils.Filter(
+            skillManager.AllSkills.ToArray(),
+            s => s.requiredLevel >= 3
+        );
+
+        foreach (var skill in highLevelSkills)
+        {
+            Debug.Log("Skill alta: " + skill.skillName);
+        }
+    }
+
+    public void ExecuteSkills() // Ejecutar una acción para cada habilidad aprendida      
+    {
+        foreach (var skill in player.learnedSkills)
+        {
             GameUtils.Process(skill, s =>
             {
                 Debug.Log("Ejecutando: " + s.skillName);
             });
         }
+    }
 
-        // ttryFind
-        if (GameUtils.TryFind(skillManager.allSkills, s => s.id == 1, out Skill found))
+   
+    public void FindSkill() // Buscar una habilidad específica en la lista de habilidades aprendidas
+    {
+        if (GameUtils.TryFind(skillManager.AllSkills.ToArray(), s => s.id == 1, out Skill found))
         {
             Debug.Log("Encontrada: " + found.skillName);
         }
 
-        // out 
-        GameUtils.TryFind(skillManager.allSkills, s => s.cost > 100, out _);
+        // ignorando resultado
+        GameUtils.TryFind(skillManager.AllSkills.ToArray(), s => s.requiredLevel > 5, out _);
     }
 
+    public void TestTakeDamage<T>(T damageable, int damage) where T : IDamageable
+    {
+        damageable.TakeDamage(damage);
+    }
 
+    public int SkillDescription(out string skillDescription)
+    {
+        skillDescription = "Skill Description: " + player.Target.SkillDescription;
+        return 1;
+    }
     public int GetPlayerLife(Player player)
     {
         return player.Life;
@@ -80,14 +114,11 @@ public class GameManager : MonoBehaviour
         return 12;
     }
 
-    public void TestTakeDamage<T>(T value, int damage) where T : IDamageable
-    {
-        value.TakeDamage(damage);
-    }
-
     public int ReturnSimple(out string value)
     {
         value = "Ayuda!!";
         return 1;
     }
 }
+
+
