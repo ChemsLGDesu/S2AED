@@ -5,7 +5,7 @@ using UnityEngine;
 public class Player :MonoBehaviour, IDamageable
 {
     public string Name;
-    public int Life;
+    public int Life=100;
     public int level = 1;
 
     public Skill Target;
@@ -49,7 +49,7 @@ public class Player :MonoBehaviour, IDamageable
         }
         else
         {
-            Debug.Log("No cumples requisitos (nivel o dinero)");
+            Debug.Log("No cumples requisitos para subir de nivel)");
         }
     }
 

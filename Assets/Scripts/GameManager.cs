@@ -34,11 +34,11 @@ public class GameManager : MonoBehaviour
         player.Target = skill;
         Debug.Log("Seleccionada: " + skill.skillName);
 
-        // ✔ Mostrar descripción (out)
+        // Mostrar descripción (out)
         SkillDescription(out string desc);
         Debug.Log(desc);
 
-        // ✔ Validar si puede aprender
+        // Validar si puede aprender
         bool canLearn = GameUtils.Validate(skill, s => player.level >= s.requiredLevel);
 
         if (canLearn)
@@ -58,11 +58,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void ShowHighLevelSkills()
+    public void ShowHighLevelSkills() //maximo de habilidades
     {
         Skill[] highLevelSkills = GameUtils.Filter(
             skillManager.AllSkills.ToArray(),
-            s => s.requiredLevel >= 3
+            s => s.requiredLevel >= 5
         );
 
         foreach (var skill in highLevelSkills)
